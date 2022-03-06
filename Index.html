@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INDEX</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    
+</head>
+<body style="background-color:chartreuse;">
+  <nav class="navbar navbar-expand-sm bg-light justify-content-center">
+    <ul class="navbar-nav">
+      <li>
+        <a class="navbar-brand" href="#">
+        <img src="img_avatar1.png" alt="Logo" style="width:40px;" class="rounded-pill">
+      </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link">Login</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="2081018_spend.html">Pengeluaran</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="2081018_income.html">Pemasukan</a>
+      </li>
+    </ul>
+  </nav><br><br>
+  <h2 style="text-align: center;">Aplikasi Keuangan Mahasiswa</h2>
+  <h2 style="text-align: center;">Selamat Datang!</h2>
+      <div id="app">
+
+        <div class="container mt-5">
+         
+      
+              <div class="col-md-12">
+                <button class="btn btn-md btn-success" v-on:click="resetForm()">Tambah Data </button>
+                <form class="needs-validation" novalidate>
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="nama">Nama Mahasiswa</label>
+                      <input  v-model="nama" type="text" class="form-control" id="nama" placeholder="" value="" required>
+                      <div class="invalid-feedback">
+                        Valid first name is required.
+                      </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label for="nim">NIM Mahasiswa</label>
+                      <input v-model="nim" type="text" class="form-control" id="nim" placeholder="" value="" required>
+                      <div class="invalid-feedback">
+                        Valid NIM Mahasiswa is required.
+                      </div>
+                    </div>
+                  </div>
+      
+                  <div class="mb-3">
+                    <label for="email">Email <span class="text-muted">(Optional)</span></label>
+                    <input v-model="email" type="email" class="form-control" id="email" placeholder="@unai.edu">
+                    <div class="invalid-feedback">
+                      Please enter a valid Email_Mahasiswa address for shipping updates.
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="noHp">NO HP Mahasiswa</label>
+                      <input v-model="noHp" type="text" class="form-control" id="noHp" placeholder="" value="" required>
+                      <div class="invalid-feedback" style="width: 100%;">
+                        Your NO_HP_Mahasiswa is required.
+                      </div>
+                  </div>
+                  </div>
+                
+                  <hr class="mb-4">
+                  <button v-if="!editMode && !deleteMode" v-on:click="createLogin" class="btn btn-primary btn-lg btn-block" type="submit">Submit Data</button>
+                  <button v-if="editMode" v-on:click="updateLogin" class="btn btn-warning btn-lg btn-block" type="submit">Update Data</button>
+                  <button v-if="deleteMode" v-on:click="deleteLogin" class="btn btn-danger btn-lg btn-block" type="submit">Delete Data</button>
+                  
+                </form>
+                <table class="table table-striped">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nama Mahasiswa</th>
+                        <th>NIM Mahasiswa</th>
+                        <th>Email Mahasiswa</th>
+                        <th>NO HP Mahasiswa</th>
+                        <th>Pengeluaran</th>
+                        <th>Pemasukan</th>
+                    </tr>
+                    <tr v-for="logis in login">
+                        <td>{{ logis.loginId }}</td>
+                        <td>{{ logis.nama }}</td>
+                        <td>{{ logis.nim }}</td>
+                        <td>{{ logis.email }}</td>
+                        <td>{{ logis.noHp }}</td>
+                        <td><a href="2081018_spend.html"><button class="btn btn-md btn-info" >Pengeluaran</button></a></td>
+                        <td><a href="2081018_income.html"><button class="btn btn-danger" v-on:click="getDelete(login)">Pemasukan</button></a></td>
+                    </li>
+                </table>
+
+                <div v-if="message" class="alert alert-success" role="alert">
+                    {{ message }}
+                </div>
+              </div>
+            </div>
+
+            <footer class="my-5 pt-5 text-muted text-center text-small">
+                <p class="mb-1">&copy; 2021 FTI UNAI</p>
+                <ul class="list-inline">
+                  <li class="list-inline-item"><a href="#">Privacy</a></li>
+                  <li class="list-inline-item"><a href="#">Terms</a></li>
+                  <li class="list-inline-item"><a href="#">Support</a></li>
+                </ul>
+              </footer>
+
+    </div>
+    
+
+    <!-- Axios -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <script>
+        var app = new Vue ({
+            el: '#app',
+            data: {
+                errors: [],
+                message: null,
+                login:[],
+                loginIdEdit: null,
+                loginIdDelete: null,
+                editMode: false,
+                deleteMode: false,
+                nama: '',
+                nim: '',
+                email: '',
+                noHp: '',
+            },
+            mounted: function() {
+                this.getLogin();
+            },
+            methods: {
+                getLogin() {
+                    axios.get('https://621f76e0ce99a7de193d432f.mockapi.io/login')
+                        .then(response => {
+                            this.login = response.data;
+                            console.log(response);
+                        })
+                        .catch(error => {
+                            console.log(error);
+                        });
+                },
+                createLogin: function(){
+                    axios.post('https://621f76e0ce99a7de193d432f.mockapi.io/login', {
+                        nama: this.nama,
+                        nim: this.nim,
+                        email: this.email,
+                        noHp: this.noHp,
+                    })
+                    .then(response => {
+                            this.getLogin();
+                            this.message = "Your data has been submitted";
+                            console.log(response);
+                    })
+                    .catch(error => {
+                            console.log(error);
+                    });
+                },
+                resetForm: function () {
+                    this.message = null;
+                    this.editMode = false;
+                    this.deleteMode = false;
+                    this.loginIdEdit = null;
+                    this.nama = null;
+                    this.nim = null;
+                    this.email = null;
+                    this.noHp = null;
+                },
+                getEdit: function (login) {
+                    this.message = null;
+                    this.editMode = true;
+                    this.deleteMode = false;
+                    this.loginIdEdit = login.loginId;
+                    this.nama = login.nama;
+                    this.nim = login.nim;
+                    this.email = login.email;
+                    this.noHp = login.noHp;
+                },
+                getDelete: function (login) {
+                    this.message = null;
+                    this.deleteMode = true;
+                    this.editMode = false;
+                    this.loginIdDelete = login.loginId;
+                    this.nama = login.nama;
+                    this.nim = login.nim;
+                    this.email = login.Email_Mahasiswa;
+                    this.noHp = login.noHp;
+                },
+                updateLogin: function () {
+                    axios.put(`https://621f76e0ce99a7de193d432f.mockapi.io/login/${this.loginIdEdit}`, {
+                            nama: this.nama,
+                            nim: this.nim,
+                            email: this.email,
+                            noHp: this.noHp,
+                        })
+                        .then(res => {
+                            // handle success
+                            this.message = "Your data has been updated";
+                            this.getLogin();
+                        })
+                        .catch(err => {
+                            // handle error
+                            console.log(err);
+                        })
+                },
+                // Delete User
+                deleteLogin: function () {
+                    axios.delete(`https://621f76e0ce99a7de193d432f.mockapi.io/login/${this.loginIdDelete}`)
+                        .then(res => {
+                            // handle success
+                            this.message = "Your data has been deleted";
+                            this.getLogin();
+                        })
+                        .catch(err => {
+                            // handle error
+                            console.log(err);
+                        })
+                }
+            }
+        })
+        
+    </script>
+
+
+</body>
+</html>
